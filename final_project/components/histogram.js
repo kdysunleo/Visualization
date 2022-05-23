@@ -225,6 +225,5 @@ class Histogram {
 
     clear(){
         this.container.selectAll('*').remove();
-        this.svg.axis.tickSizeOuter(0);
     }
 }
