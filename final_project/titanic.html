@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <script src="components/histogram.js"></script>
+    <script>
+        var PassengerId = -1;
+        var CellIndex = -1;
+        var CellValue = -1;
+        histogram = new Histogram("#histogram");
+    </script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.25.6/d3-legend.min.js"></script>
+    <script src="components/scatterplot.js"></script>
+    <script src="components/datatable.js"></script>
+
+
+    <title>Titanic</title>
+    <style>
+        body {
+            background: #eee;
+            overflow-y: scroll;
+        }
+
+        .container {
+            width: 1000px;
+            background: white;
+        }
+
+        /* In the <style> tag in index.html */
+        .brushed {
+            stroke-width: 1;
+            stroke: gray;
+            r: 5;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav class="container navbar navbar-light bg-light">
+            <div class="container-fluid">
+                <span class="navbar-brand mb-0 h1">Titanic Dataset</span>
+            </div>
+        </nav>
+
+    </header>
+
+    <main class="container pb-3">
+        <div class="row pt-2">
+            <div class="col-1 text-end pe-2"><strong>X:</strong></div>
+            <div class="col-11">
+                <!-- Pclass, Sex, Age, SibSp, Parch, Fare, Embarked -->
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="Pclass" id="x-sl"
+                        checked>
+                    <label class="form-check-label" for="x-sl">Pclass</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="Sex" id="x-sw">
+                    <label class="form-check-label" for="x-sw">Sex</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="Age" id="x-pl">
+                    <label class="form-check-label" for="x-pl">Age</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="SibSp" id="x-pw">
+                    <label class="form-check-label" for="x-pw">SibSp</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="Parch" id="x-pw">
+                    <label class="form-check-label" for="x-pw">Parch</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="Fare" id="x-pw">
+                    <label class="form-check-label" for="x-pw">Fare</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="x-encoding" value="Embarked" id="x-pw">
+                    <label class="form-check-label" for="x-pw">Embarked</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-1 text-end pe-2"><strong>Y:</strong></div>
+            <div class="col-11">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Pclass" id="y-sl">
+                    <label class="form-check-label" for="y-sl">Pclass</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Sex" id="y-sw"
+                        checked>
+                    <label class="form-check-label" for="y-sw">Sex</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Age" id="y-pl">
+                    <label class="form-check-label" for="y-pl">Age</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="SibSp" id="y-pw">
+                    <label class="form-check-label" for="y-pw">SibSp</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Parch" id="y-pw">
+                    <label class="form-check-label" for="y-pw">Parch</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Fare" id="y-pw">
+                    <label class="form-check-label" for="y-pw">Fare</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="y-encoding" value="Embarked" id="y-pw">
+                    <label class="form-check-label" for="y-pw">Embarked</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col offset-1">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="use-color" checked>
+                    <label class="form-check-label" for="use-color">Color-encode Class</label>
+                </div>
+            </div>
+        </div>
+        <div class="text-center">
+            <svg width="400" height="400" id="scatterplot">  <!-- scatterplot -->
+            </svg>
+
+            <svg width="400" height="400" id="histogram"> <!-- graph -->
+            </svg>
+        </div>
+        <table class="table table-striped text-center">
+            <thead>
+                <tr>
+                    <th>PessengerId</th>
+                    <th>Pclass</th>
+                    <th>Sex</th>
+                    <th>Age</th>
+                    <th>SibSp</th>
+                    <th>Parch</th>
+                    <th>Fare</th>
+                    <th>Embarked</th>
+                    <th>Scores</th>
+                    <th>Survived</th>
+                </tr>
+            </thead>
+            <tbody id="data-table">
+
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        let data, brushedData, clickedData, scatterplot, histogram, dataTable, possible_data;
+        let col = ["PassengerId", "Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "scores"];
+
+        function updateScatterplot() {
+            let xVar = d3.select("input[type=radio][name=x-encoding]:checked").property("value");
+            let yVar = d3.select("input[type=radio][name=y-encoding]:checked").property("value");
+            let useColor = d3.select("#use-color").property("checked");
+
+            scatterplot.update(xVar, yVar, "Survived", useColor);
+        }
+
+        function updateDataTable() {
+            dataTable.update(brushedData && brushedData.length > 0 ? brushedData : data, data.columns)
+            histogram.clear()
+        }
+
+        d3.csv("https://kdysunleo.github.io/Visualization/data/only_test_result.csv")
+            .then(csvData => {
+                csvData.forEach(d => { // PassengerId,Pclass,Sex,Age,SibSp,Parch,Fare,Embarked,Survived
+                    d["PassengerId"] = +d["PassengerId"];
+                    d["Pclass"] = +d["Pclass"];
+                    d["Sex"] = d["Sex"];
+                    d["Age"] = +d["Age"];
+                    d["SibSp"] = +d["SibSp"];
+                    d["Parch"] = +d["Parch"];
+                    d["Fare"] = +d["Fare"];
+                    d["Embarked"] = d["Embarked"];
+                    d["scores"] = +d["scores"];
+                    d["Survived"] = d["Survived"];
+                });
+
+                data = csvData;
+
+                scatterplot = new Scatterplot("#scatterplot", data);
+                scatterplot.initialize();
+
+                updateScatterplot();
+                d3.selectAll("input[type=radio][name=x-encoding]").on("change", updateScatterplot);
+                d3.selectAll("input[type=radio][name=y-encoding]").on("change", updateScatterplot);
+                d3.selectAll("#use-color").on("change", updateScatterplot);
+
+                              
+                scatterplot.on("brush", (brushedItems) => {
+                    brushedData = brushedItems;
+                    updateDataTable();
+                });
+                
+                histogram = new Histogram("#histogram");
+                histogram.initialize();
+
+                dataTable = new DataTable("#data-table", "#histogram");
+
+                updateDataTable();
+
+            })
+
+        d3.csv("https://kdysunleo.github.io/Visualization/data/possible_test_result.csv")
+            .then(csvData2 => {
+                csvData2.forEach(d2 => { // PassengerId,Pclass,Sex,Age,SibSp,Parch,Fare,Embarked,Survived
+                    d2["PassengerId"] = +d2["PassengerId"];
+                    d2["Pclass"] = +d2["Pclass"];
+                    d2["Sex"] = d2["Sex"];
+                    d2["Age"] = +d2["Age"];
+                    d2["SibSp"] = +d2["SibSp"];
+                    d2["Parch"] = +d2["Parch"];
+                    d2["Fare"] = +d2["Fare"];
+                    d2["Embarked"] = d2["Embarked"];
+                    d2["scores"] = +d2["scores"];
+                    d2["Survived"] = d2["Survived"];
+                });
+
+                possible_data = csvData2;
+            })
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
