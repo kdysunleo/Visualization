@@ -220,7 +220,7 @@ class Histogram {
             .attr("y", 10 - (this.margin.top / 2))
             .attr("text-anchor", "middle")  
             .style("font-size", "16px") 
-            .text("ID : " + PassengerId);
+            .text("ID : " + PassengerId + " (" + col[CellIndex] + ")");
     }
 
     clear(){
