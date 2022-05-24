@@ -18,9 +18,9 @@ class DataTable {
             .text(d => d)
             .style("color", function(d){
                 if (d=="Survived") {
-                    return "rgb(31, 119, 180)";
-                } else if (d == "Not Survived") {
                     return "rgb(255, 127, 14)";
+                } else if (d == "Not Survived") {
+                    return "rgb(31, 119, 180)";
                 } else {
                     return "black";
                 }
